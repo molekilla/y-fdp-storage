@@ -126,22 +126,16 @@ export const storeState = (idbPersistence, forceStore = true) =>
     }
   })
 
-/**
- * @param {string} name
- */
-export const clearDocument = name => idb.deleteDB(name)
-
-/**
- * @extends Observable<string>
- */
 export class FdpStoragePersistence {
-    private dbRef: number;
-    private dbSize: number;
-    private destroyed: boolean;
-    public synced: boolean = false;
-    private _storeTimeout: number
-    private _storeTimeoutId: any
-    /**
+  readonly DEFAULT_POD_NAME = 'yjs'
+  readonly INIT_PATH = '/data'
+  private dbRef: number
+  private dbSize: number
+  private destroyed: boolean
+  public synced: boolean = false
+  private _storeTimeout: number
+  private _storeTimeoutId: any
+  /**
    * @param {string} name
    * @param {Y.Doc} doc
    */
@@ -178,25 +172,25 @@ export class FdpStoragePersistence {
      * @param {Uint8Array} update
      * @param {any} origin
      */
-    this._storeUpdate = (update, origin) => {
-      if (this.db && origin !== this) {
-        const [updatesStore] = idb.transact(/** @type {IDBDatabase} */ this.db, [updatesStoreName])
-        idb.addAutoKey(updatesStore, update)
-        if (++this._dbsize >= PREFERRED_TRIM_SIZE) {
-          // debounce store call
-          if (this._storeTimeoutId !== null) {
-            clearTimeout(this._storeTimeoutId)
-          }
-          this._storeTimeoutId = setTimeout(() => {
-            storeState(this, false)
-            this._storeTimeoutId = null
-          }, this._storeTimeout)
-        }
-      }
-    }
-    doc.on('update', this._storeUpdate)
-    this.destroy = this.destroy.bind(this)
-    doc.on('destroy', this.destroy)
+    // this._storeUpdate = (update, origin) => {
+    //   if (this.db && origin !== this) {
+    //     const [updatesStore] = idb.transact(/** @type {IDBDatabase} */ this.db, [updatesStoreName])
+    //     idb.addAutoKey(updatesStore, update)
+    //     if (++this._dbsize >= PREFERRED_TRIM_SIZE) {
+    //       // debounce store call
+    //       if (this._storeTimeoutId !== null) {
+    //         clearTimeout(this._storeTimeoutId)
+    //       }
+    //       this._storeTimeoutId = setTimeout(() => {
+    //         storeState(this, false)
+    //         this._storeTimeoutId = null
+    //       }, this._storeTimeout)
+    //     }
+    //   }
+    // }
+    // doc.on('update', this._storeUpdate)
+    // this.destroy = this.destroy.bind(this)
+    // doc.on('destroy', this.destroy)
   }
 
   destroy() {
@@ -211,93 +205,19 @@ export class FdpStoragePersistence {
     })
   }
 
-  /**
-   * Destroys this instance and removes all data from indexeddb.
-   *
-   * @return {Promise<void>}
-   */
-  clearData() {
-    return this.destroy().then(() => {
-      idb.deleteDB(this.name)
-    })
+  getKeyPath(key: string) {
+    return `${this.INIT_PATH}/${key}`
   }
 
-  /**
-   * @param {String | number | ArrayBuffer | Date} key
-   * @return {Promise<String | number | ArrayBuffer | Date | any>}
-   */
-  get(key) {
-    return this._db.then(db => {
-      const [custom] = idb.transact(db, [customStoreName], 'readonly')
-      return idb.get(custom, key)
-    })
+  get(key: string): Promise<Uint8Array> {
+    return this.fdp.file.downloadData(this.DEFAULT_POD_NAME, this.getKeyPath(key))
   }
 
-  /**
-   * @param {String | number | ArrayBuffer | Date} key
-   * @param {String | number | ArrayBuffer | Date} value
-   * @return {Promise<String | number | ArrayBuffer | Date>}
-   */
-  set(key, value) {
-    return this._db.then(db => {
-      const [custom] = idb.transact(db, [customStoreName])
-      return idb.put(custom, value, key)
-    })
+  set(key: string, value: Uint8Array) {
+    this.fdp.file.uploadData(this.DEFAULT_POD_NAME, this.getKeyPath(key), value)
   }
 
-  /**
-   * @param {String | number | ArrayBuffer | Date} key
-   * @return {Promise<undefined>}
-   */
   del(key) {
-    return this._db.then(db => {
-      const [custom] = idb.transact(db, [customStoreName])
-      return idb.del(custom, key)
-    })
+    this.fdp.file.delete(this.DEFAULT_POD_NAME, this.getKeyPath(key))
   }
 }
-
-
-
-//   /**
-//    * Adds a block to fdp-storage
-//    * @param key
-//    * @param val
-//     */
-//   async put(key: CID, val: Uint8Array): Promise<void> {
-//     const isValidCid = assertBeesonCidReference(key, val)
-//     if (!isValidCid) throw new Error(`Invalid CID: ${key}`)
-//     this.fdp.connection.bee.uploadData(this.fdp.connection.postageBatchId, val)
-//   }
-
-//   /**
-//    * Reads a block from fdp-storage
-//    * @param key
-//    * @returns
-//    */
-//   async get(key: CID): Promise<Uint8Array> {
-//     const ref = toSwarmRef(key)
-
-//     return this.fdp.connection.bee.downloadData(ref)
-//   }
-
-//   /**
-//    *
-//    * @param key
-//    * @param options
-//    * @returns
-//    */
-//   async has(key: CID, options?: Options | undefined): Promise<boolean> {
-//     const ref = toSwarmRef(key)
-
-//     return this.fdp.connection.bee.isReferenceRetrievable(ref.toString())
-//   }
-
-//   /**
-//    *
-//    * @param key
-//    * @param options
-//    */
-//   async delete(key: CID, options?: Options | undefined): Promise<void> {
-//     throw new Error('Method not implemented.')
-//   }
