@@ -1,0 +1,45 @@
+{
+  "name": "y-fdp-storage",
+  "version": "0.1.0",
+  "description": "fdp-storage database provider for Yjs",
+  "main": "lib/index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/molekilla/y-fdp-storage.git"
+  },
+  "scripts": {
+    "docs": "npx typedoc src/ --out docs --excludePrivate --excludeExternals --excludeProtected --excludePrivate --exclude '**/*.spec.ts' --exclude '**/*.test.ts' --exclude '**/*.spec.tsx' --exclude '**/*.test.tsx' --exclude '**/*.spec.js' --exclude '**/*.test.js'",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --verbose",
+    "prepare": "rimraf dist && npm run compile:types && tsc",
+    "test:unit": "jest --verbose --selectProjects=node:unit node:unit --config=jest.config.ts",
+    "compile": "webpack --progress --env target=node",
+    "compile:types": "tsc --emitDeclarationOnly --declaration --skipLibCheck",
+    "lint": "eslint --fix \"src/**/*.ts\" && prettier --write \"src/**/*.ts\"",
+    "lint:check": "eslint \"src/**/*.ts\" && prettier --check \"src/**/*.ts\"",
+    "check:types": "tsc --project tsconfig.json --skipLibCheck"
+  },
+  "keywords": [
+    "web3",
+    "swarm",
+    "ethereum-swarm"
+  ],
+  "author": "Rogelio Morrell",
+  "bugs": {
+    "url": "https://github.com/molekilla/y-fdp-storage/issues"
+  },
+  "homepage": "https://github.com/molekilla/y-fdp-storage#readme",
+  "dependencies": {
+    "yjs": "^13.5.48",
+    "@ethersphere/swarm-cid": "^0.1.0",
+    "@fairdatasociety/beeson": "0.1.1",
+    "@fairdatasociety/beeson-multiformats": "^1.0.3",
+    "@fairdatasociety/fdp-storage": "^0.5.1",
+    "blockstore-core": "^2.0.1",
+    "keccak256": "^1.0.6",
+    "multiformats": "^9.8.1"
+  }
+}
