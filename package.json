@@ -33,13 +33,14 @@
   },
   "homepage": "https://github.com/molekilla/y-fdp-storage#readme",
   "dependencies": {
-    "yjs": "^13.5.48",
     "@ethersphere/swarm-cid": "^0.1.0",
     "@fairdatasociety/beeson": "0.1.1",
     "@fairdatasociety/beeson-multiformats": "^1.0.3",
     "@fairdatasociety/fdp-storage": "^0.5.1",
     "blockstore-core": "^2.0.1",
+    "ethers": "^6.1.0",
     "keccak256": "^1.0.6",
-    "multiformats": "^9.8.1"
+    "multiformats": "^9.8.1",
+    "yjs": "^13.5.48"
   }
 }
