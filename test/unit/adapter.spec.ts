@@ -1,53 +1,45 @@
-import { BatchId } from '@ethersphere/bee-js'
-import { BeeSon, Type } from '@fairdatasociety/beeson'
-import * as Block from 'multiformats/block'
-import { FdpStorageBlockstore } from '../../src'
+import * as Y from 'yjs'
+import { FdpStoragePersistence } from '../../src/adapter'
 import { FdpStorage } from '@fairdatasociety/fdp-storage'
-import { codec, hasher } from '@fairdatasociety/beeson-multiformats'
 
-describe('fdp-blockstore', () => {
-  let fdpBlockstore: FdpStorageBlockstore
+describe('y-fdp-storage', () => {
+  let persistence
 
   beforeEach(() => {
-    const id = `54ed0da82eb85ab72f9b8c37fdff0013ac5ba0bf96ead71d4a51313ed831b9e5` as BatchId
+    const id = `54ed0da82eb85ab72f9b8c37fdff0013ac5ba0bf96ead71d4a51313ed831b9e5`
     const client = new FdpStorage('http://localhost:1633', id)
-    // TODO: create mock
-    fdpBlockstore = new FdpStorageBlockstore(client)
+    const topic = '/crdt/document/test'
+    persistence = new FdpStoragePersistence(client.connection.bee, feed, client.account.wallet, topic, id)
   })
 
   it('when created should be defined', async () => {
-    expect(fdpBlockstore).toBeDefined()
+    expect(persistence).toBeDefined()
   })
 
-  it('should create block', async () => {
-    const json = [0, 1, 2, 3, 5, 6]
-    const beeson = new BeeSon({ json })
-    expect(beeson.typeManager.type).toBe(Type.array)
-    expect(beeson.json).toStrictEqual(json)
+  it('when syncing one change, should update', async () => {
+    const doc = new Y.Doc()
 
-    const value = beeson
-    // encode a block
-    const block = await Block.encode({ value, codec, hasher })
-    await fdpBlockstore.put(block.cid, block.bytes)
+    doc.on('update', async update => {
+      await persistence.storeUpdate(update)
+    })
 
-    // get block
-    const resp = await fdpBlockstore.get(block.cid)
+    doc.getArray('test').insert(0, ['Hello', 'World'])
 
-    expect(resp.toString()).toEqual(block.bytes.toString())
+    const mostRecentDoc = await persistence.getYDoc()
+    expect(mostRecentDoc.getArray('test').toArray()).toEqual(['Hello', 'World'])
   })
 
-  it('should create beeson block', async () => {
-    const json = [0, 1, 2, 3, 5, 6]
-    const beeson = new BeeSon({ json })
-    expect(beeson.typeManager.type).toBe(Type.array)
-    expect(beeson.json).toStrictEqual(json)
+  it('when syncing one or more changes, should update', async () => {
+    const doc = new Y.Doc()
 
-    // pub block
-    const cid = await fdpBlockstore.putBeesonBlock(beeson)
+    doc.on('update', async update => {
+      await persistence.storeUpdate(update)
+    })
 
-    // get block
-    const resp = await fdpBlockstore.getBeesonBlock(cid)
+    doc.getArray('test').insert(0, ['Hello', 'World'])
+    doc.getArray('test').insert(1, ['Hola', 'Mundo'])
 
-    expect(resp.json).toEqual(beeson.json)
+    const mostRecentDoc = await persistence.getYDoc()
+    expect(mostRecentDoc.getArray('test').toArray()).toEqual(['Hello', 'World'])
   })
 })

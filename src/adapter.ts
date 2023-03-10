@@ -35,7 +35,9 @@ export class FdpStoragePersistence {
    * @returns void
    */
   async storeUpdate(update) {
-    await this.stateStorage.storageWrite(update)
+    const current = await this.stateStorage.storageRead()
+    const merged = Y.mergeUpdates([current, update])
+    await this.stateStorage.storageWrite(merged)
   }
 
   /** 
