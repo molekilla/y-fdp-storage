@@ -1,12 +1,8 @@
 import * as Block from 'multiformats/block'
-import { BeeSon } from '@fairdatasociety/beeson'
-import { makeChunk } from '@fairdatasociety/bmt-js'
 import { arrayify, hexlify } from 'ethers/lib/utils'
-import { SequentialFeed } from './swarm-feeds'
-import { codec, hasher } from '@fairdatasociety/beeson-multiformats'
-import { BlockDecoder } from 'multiformats/codecs/interface'
-import { JsonValue } from '@fairdatasociety/beeson/dist/types'
+import feeds from './swarm-feeds'
 import { Bee } from '@ethersphere/bee-js'
+import * as bmt from '@fairdatasociety/bmt-js'
 
 /**
  * Defines a block (chunk) stored in the feed.
@@ -20,7 +16,7 @@ interface Block {
 export class FeedStorage {
   constructor(
     public bee: Bee,
-    public feed: SequentialFeed,
+    public feed: feeds.SequentialFeed,
     public signer: any,
     public topic: string,
     public postageBatchId: any,
@@ -49,7 +45,7 @@ export class FeedStorage {
   async storageWrite(state: Uint8Array) {
     const feedRW = this.feed.makeFeedRW(this.topic, this.signer)
 
-    const chunk = makeChunk(state)
+    const chunk = bmt.makeChunk(state)
 
     const block: Block = {
       state: hexlify(state),
@@ -60,45 +56,5 @@ export class FeedStorage {
     const reference = await this.bee.uploadData(this.postageBatchId, JSON.stringify(block))
 
     return feedRW.setLastUpdate(this.postageBatchId, reference.reference)
-  }
-
-  /**
-   * Serializes the contract state and writes it to the feed.
-   */
-  async serialize(state = {}) {
-    const value = new BeeSon<JsonValue>({
-      json: state,
-    })
-    const block = await Block.encode({ value, codec, hasher })
-
-    await this.storageWrite(block.bytes)
-  }
-
-  /** Deserializes the contract state from the feed. */
-  async deserialize() {
-    const data = await this.storageRead()
-
-    // decode a block
-    const state = await Block.decode({
-      bytes: data.state as Uint8Array,
-      codec: codec as BlockDecoder<252, BeeSon<JsonValue>>,
-      hasher,
-    })
-
-    const res = await state.value
-
-    return res.json
-  }
-
-  // get state
-  getState() {
-    const { bee, feed, signer, topic, postageBatchId, ...state } = this
-
-    return state
-  }
-
-  // set state
-  setState(state: object) {
-    Object.assign(this, state)
   }
 }
