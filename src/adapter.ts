@@ -1,7 +1,8 @@
 import * as Y from 'yjs'
-import { SequentialFeed } from './swarm-feeds'
-import { Bee } from '@ethersphere/bee-js'
 import { FeedStorage } from './storage'
+import { ethers } from 'ethers'
+import { Bee } from '@ethersphere/bee-js'
+import { SequentialFeed } from './feeds/sequential-feed'
 
 /**
  * Persistence layer for Yjs documents.
@@ -9,7 +10,6 @@ import { FeedStorage } from './storage'
  */
 export class FdpStoragePersistence {
   private stateStorage: FeedStorage
-  public synced: boolean = false
 
   /**
    * @param bee Bee instance
@@ -25,9 +25,11 @@ export class FdpStoragePersistence {
     public topic: string,
     public postageBatchId: any,
   ) {
-    this.stateStorage = new FeedStorage(bee, feed, signer, topic, postageBatchId)
-  }
+    const hash = ethers.utils.id(topic).slice(2)
+    const h = ethers.utils.arrayify(hash)
 
+    this.stateStorage = new FeedStorage(bee, feed, signer, h, postageBatchId)
+  }
 
   /**
    * Writes the update to the feed.
@@ -40,7 +42,7 @@ export class FdpStoragePersistence {
     await this.stateStorage.storageWrite(merged)
   }
 
-  /** 
+  /**
    * Reads the last state from the feed.
    * @returns contract state
    */
@@ -48,6 +50,7 @@ export class FdpStoragePersistence {
     const updates = await this.stateStorage.storageRead()
     const doc = new Y.Doc()
     Y.applyUpdate(doc, updates.state)
+
     return doc
   }
 }

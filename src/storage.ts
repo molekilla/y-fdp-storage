@@ -1,6 +1,6 @@
 import * as Block from 'multiformats/block'
 import { arrayify, hexlify } from 'ethers/lib/utils'
-import feeds from './swarm-feeds'
+import { SequentialFeed } from './feeds/sequential-feed'
 import { Bee } from '@ethersphere/bee-js'
 import * as bmt from '@fairdatasociety/bmt-js'
 
@@ -16,9 +16,9 @@ interface Block {
 export class FeedStorage {
   constructor(
     public bee: Bee,
-    public feed: feeds.SequentialFeed,
+    public feed: SequentialFeed,
     public signer: any,
-    public topic: string,
+    public topic: any,
     public postageBatchId: any,
   ) {}
   /**
