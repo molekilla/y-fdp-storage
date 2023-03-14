@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/molekilla/y-fdp-storage#readme",
   "dependencies": {
-    "@ethersphere/bee-js": "^5.1.0",
+    "@ethersphere/bee-js": "^6.0.0-pre.2",
     "@ethersphere/swarm-cid": "^0.1.0",
     "@fairdatasociety/bmt-js": "^2.0.1",
     "@types/elliptic": "^6.4.14",

@@ -16,5 +16,9 @@ module.exports = {
     ],
   },
   automock: false,
-  setupFiles: ['./setupJest.js'],
+
+  // This will setup the prerequisites for the tests to run
+  //  globalSetup: './tests-setup.ts',
+  testTimeout: 360000,
+  rootDir: 'test',
 }

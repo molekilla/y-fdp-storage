@@ -26,9 +26,8 @@ export class FdpStoragePersistence {
     public postageBatchId: any,
   ) {
     const hash = ethers.utils.id(topic).slice(2)
-    const h = ethers.utils.arrayify(hash)
-
-    this.stateStorage = new FeedStorage(bee, feed, signer, h, postageBatchId)
+    // const h = ethers.utils.arrayify(hash)
+    this.stateStorage = new FeedStorage(bee, feed, signer, hash, postageBatchId)
   }
 
   /**
@@ -37,9 +36,19 @@ export class FdpStoragePersistence {
    * @returns void
    */
   async storeUpdate(update) {
-    const current = await this.stateStorage.storageRead()
-    const merged = Y.mergeUpdates([current, update])
-    await this.stateStorage.storageWrite(merged)
+    let current = null
+    try {
+      current = await this.stateStorage.storageRead()
+    } catch (e) {
+    } finally {
+      let merged
+      if (current) {
+        merged = Y.mergeUpdates([current, update])
+      } else {
+        merged = update
+      }
+      await this.stateStorage.storageWrite(merged)
+    }
   }
 
   /**

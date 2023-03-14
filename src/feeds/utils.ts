@@ -1,9 +1,9 @@
 import { Data, Signer } from '@ethersphere/bee-js'
 import { EthAddress } from '@ethersphere/bee-js/dist/types/utils/eth'
 import { Utils } from '@ethersphere/bee-js'
-import * as elliptic from 'elliptic'
+import elliptic from 'elliptic'
+const EC = elliptic.ec
 const { assertBytes, hexToBytes, makeHexString, isBytes } = Utils
-
 
 export const TOPIC_BYTES_LENGTH = 32
 export const TOPIC_HEX_LENGTH = 64
@@ -14,6 +14,7 @@ type EncryptedChunkReference = Bytes<64>
 
 export type Bytes<Length extends number = number> = Utils.Bytes<Length>
 export type HexString<Length extends number = number> = Utils.HexString<Length>
+// @ts-ignore - this is a hack to make the type checker happy
 export type EllipticPublicKey = elliptic.curve.base.BasePoint
 export type Signature = Bytes<65>
 export type ChunkReference = PlainChunkReference | EncryptedChunkReference
@@ -58,10 +59,12 @@ function hashWithEthereumPrefix(data: Uint8Array): Bytes<32> {
  * @param privateKey  The private key used for signing the data
  */
 export function defaultSign(data: Uint8Array, privateKey: Bytes<32>): Signature {
-  const curve = new elliptic.ec('secp256k1')
+  const curve = new EC('secp256k1')
+  // @ts-ignore - this is a hack to make the type checker happy
   const keyPair = curve.keyFromPrivate(privateKey)
 
   const hashedDigest = hashWithEthereumPrefix(data)
+  // @ts-ignore - this is a hack to make the type checker happy
   const sigRaw = curve.sign(hashedDigest, keyPair, { canonical: true, pers: undefined })
 
   if (sigRaw.recoveryParam === null) {
@@ -117,7 +120,8 @@ export function assertSigner(signer: unknown): asserts signer is Signer {
  * @param privateKey The private key
  */
 export function makePrivateKeySigner(privateKey: Bytes<32>): Signer {
-  const curve = new elliptic.ec('secp256k1')
+  const curve = new EC('secp256k1')
+  // @ts-ignore - this is a hack to make the type checker happy
   const keyPair = curve.keyFromPrivate(privateKey)
   const address = publicKeyToAddress(keyPair.getPublic())
 

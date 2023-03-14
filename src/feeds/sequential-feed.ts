@@ -64,7 +64,8 @@ export class SequentialFeed implements SwarmFeed<number> {
      */
     const findLastUpdate = async (): Promise<FeedChunk> => {
       const index = await getLastIndex()
-      const socChunk = await socReader.download(this.getIdentifier(topicBytes, index))
+      const id = this.getIdentifier(topic as Utils.Bytes<32>, index)
+      const socChunk = await socReader.download(id)
 
       return mapSocToFeed(socChunk, index)
     }
@@ -75,7 +76,7 @@ export class SequentialFeed implements SwarmFeed<number> {
      * @returns A feed chunk
      */
     const getUpdate = async (index: number): Promise<FeedChunk> => {
-      const socChunk = await socReader.download(this.getIdentifier(topicBytes, index))
+      const socChunk = await socReader.download(this.getIdentifier(topic as Utils.Bytes<32>, index))
 
       return mapSocToFeed(socChunk, index)
     }

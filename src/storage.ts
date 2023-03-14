@@ -2,7 +2,7 @@ import * as Block from 'multiformats/block'
 import { arrayify, hexlify } from 'ethers/lib/utils'
 import { SequentialFeed } from './feeds/sequential-feed'
 import { Bee } from '@ethersphere/bee-js'
-import * as bmt from '@fairdatasociety/bmt-js'
+import bmt from '@fairdatasociety/bmt-js'
 
 /**
  * Defines a block (chunk) stored in the feed.
@@ -44,7 +44,6 @@ export class FeedStorage {
    */
   async storageWrite(state: Uint8Array) {
     const feedRW = this.feed.makeFeedRW(this.topic, this.signer)
-
     const chunk = bmt.makeChunk(state)
 
     const block: Block = {
