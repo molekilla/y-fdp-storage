@@ -13,6 +13,7 @@ import {
   writeUint64BigEndian,
 } from './utils'
 import { EthAddress, HexEthAddress } from '@ethersphere/bee-js/dist/types/utils/eth'
+import { FetchFeedUpdateResponse } from '@ethersphere/bee-js/dist/types/modules/feed'
 
 export const FEED_TYPES = ['sequential', 'fault-tolerant-stream'] as const
 
@@ -69,6 +70,7 @@ export interface SwarmFeed<Index> {
 
 /** Swarm Feed Read operations */
 export interface SwarmFeedR<Index = number> extends SwarmFeedHandler {
+  getLastUpdate(): Promise<FetchFeedUpdateResponse>
   getLastIndex(): Promise<Index> | Index
   findLastUpdate(options?: any): Promise<FeedChunk<Index>>
   getUpdate(index: Index): Promise<FeedChunk<Index>>

@@ -3,6 +3,7 @@ import { FeedStorage } from './storage'
 import { ethers } from 'ethers'
 import { Bee } from '@ethersphere/bee-js'
 import { SequentialFeed } from './feeds/sequential-feed'
+import { arrayify } from 'ethers/lib/utils'
 
 /**
  * Persistence layer for Yjs documents.
@@ -39,6 +40,7 @@ export class FdpStoragePersistence {
     let current = null
     try {
       current = await this.stateStorage.storageRead()
+      current = arrayify(current.state)
     } catch (e) {
     } finally {
       let merged
@@ -57,8 +59,10 @@ export class FdpStoragePersistence {
    */
   async getYDoc() {
     const updates = await this.stateStorage.storageRead()
+
     const doc = new Y.Doc()
-    Y.applyUpdate(doc, updates.state)
+
+    Y.applyUpdate(doc, arrayify(updates.state))
 
     return doc
   }

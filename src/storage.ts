@@ -1,5 +1,5 @@
 import * as Block from 'multiformats/block'
-import { arrayify, hexlify } from 'ethers/lib/utils'
+import { hexlify } from 'ethers/lib/utils'
 import { SequentialFeed } from './feeds/sequential-feed'
 import { Bee } from '@ethersphere/bee-js'
 import bmt from '@fairdatasociety/bmt-js'
@@ -27,13 +27,11 @@ export class FeedStorage {
    */
   async storageRead(): Promise<{ state: Uint8Array }> {
     const feedR = this.feed.makeFeedR(this.topic, this.signer.address)
-    const last = await feedR.findLastUpdate()
-
-    const data = await this.bee.downloadData(last.reference)
-    const block = data.json() as any
+    const last = await feedR.getLastUpdate()
+    const state = await this.bee.downloadData(last.reference)
 
     return {
-      state: arrayify(block.state),
+      ...JSON.parse(state.text()),
     }
   }
 
@@ -51,7 +49,6 @@ export class FeedStorage {
       chunk: Buffer.from(chunk.address()).toString('hex'),
       timestamp: Date.now(),
     }
-
     const reference = await this.bee.uploadData(this.postageBatchId, JSON.stringify(block))
 
     return feedRW.setLastUpdate(this.postageBatchId, reference.reference)

@@ -14,6 +14,7 @@ import {
 } from './feed'
 import { ChunkReference, makeSigner, writeUint64BigEndian } from './utils'
 import { Utils } from '@ethersphere/bee-js'
+import { FetchFeedUpdateResponse } from '@ethersphere/bee-js/dist/types/modules/feed'
 const { makeHexEthAddress, hexToBytes } = Utils
 
 export class SequentialFeed implements SwarmFeed<number> {
@@ -37,19 +38,23 @@ export class SequentialFeed implements SwarmFeed<number> {
     const topicHex = makeTopic(topic)
     const topicBytes = hexToBytes<32>(topicHex)
     const ownerHex = makeHexEthAddress(owner)
+    const feedReader = this.bee.makeFeedReader('sequence', topicHex, owner)
 
+    const getLastUpdate = async (): Promise<FetchFeedUpdateResponse> => {
+      const lastUpdate = await feedReader.download()
+
+      return lastUpdate
+    }
     /**
      * Gets the last index in the feed
      * @returns An index number
      */
     const getLastIndex = async (): Promise<number> => {
       // It fetches the latest feed on bee-side, because it is faster than lookup for the last index by individual API calls.
-      const feedReader = this.bee.makeFeedReader('sequence', topic, owner)
       let index: number
       try {
         const lastUpdate = await feedReader.download()
         const { feedIndex } = lastUpdate
-
         index = fetchIndexToInt(feedIndex)
       } catch (e) {
         index = -1
@@ -107,6 +112,7 @@ export class SequentialFeed implements SwarmFeed<number> {
       getUpdate,
       getUpdates,
       getLastIndex,
+      getLastUpdate,
     }
   }
 
