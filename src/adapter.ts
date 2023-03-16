@@ -30,29 +30,23 @@ export class FdpStoragePersistence {
    * @returns void
    */
   async storeUpdate(update) {
-    let current = null
     try {
-      current = await this.stateStorage.storageRead()
-      current = arrayify(current.state)
-    } catch (e) {
-    } finally {
-      let merged
-      if (current) {
-        merged = Y.mergeUpdates([current, update])
-      } else {
-        merged = update
-      }
+      const current = await this.stateStorage.storageRead()
+      const temp = arrayify(current.state)
+
+      const merged = Y.mergeUpdates([temp, update])
       await this.stateStorage.storageWrite(merged)
+    } catch (e) {
+      // 404 not found
+      await this.stateStorage.storageWrite(update)
     }
   }
-
   /**
    * Reads the last state from the feed.
    * @returns contract state
    */
   async getYDoc() {
     const updates = await this.stateStorage.storageRead()
-
     const doc = new Y.Doc()
 
     Y.applyUpdate(doc, arrayify(updates.state))
