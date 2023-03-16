@@ -4,7 +4,7 @@ fdp-storage database provider for Yjs
 ## Table of Contents
 
 - [Install](#install)
-- [Usage](#usage with bee)
+- [Usage](#usage)
 - [API](#api)
 - [References](#references)
 - [License](#license)
@@ -13,7 +13,7 @@ fdp-storage database provider for Yjs
 
 `npm install y-fdp-storage`
 
-## Usage with Bee
+## Usage
 ```typescript
 import * as Y from 'yjs'
 import { Bee } from '@ethersphere/bee-js'
