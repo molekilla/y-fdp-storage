@@ -4,9 +4,8 @@ fdp-storage database provider for Yjs
 ## Table of Contents
 
 - [Install](#install)
-- [Usage](#usage)
+- [Usage]
 - [API](#api)
-- [Drivers](#drivers)
 - [References](#references)
 - [License](#license)
 
