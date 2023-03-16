@@ -83,13 +83,13 @@ See `/docs` for generated TypeScript documentation.
 
 ## Maintainers
 
-- [molekilla](https://github.com/molekilla)
+[molekilla](https://github.com/molekilla)
 
 ## References
 
-- [Yjs](https://docs.yjs.dev/)
+[Yjs](https://docs.yjs.dev/)
 
 ## License
 
 
-[MIT](./LICENSE)
+[Apache License 2.0](./LICENSE)
