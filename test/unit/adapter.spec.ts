@@ -3,7 +3,6 @@ import { FdpStoragePersistence } from '../../src/adapter'
 import { Utils } from '@ethersphere/bee-js'
 const { hexToBytes } = Utils
 import { Bee } from '@ethersphere/bee-js'
-import { SequentialFeed } from '../../src/feeds/sequential-feed'
 import { Bytes, HexString, makePrivateKeySigner } from '../../src/feeds/utils'
 
 describe('y-fdp-storage', () => {
@@ -13,7 +12,6 @@ describe('y-fdp-storage', () => {
 
   beforeEach(async () => {
     const bee = new Bee('http://localhost:1633')
-    const seqFeed = new SequentialFeed(bee)
 
     const testIdentity = {
       privateKey: '634fb5a872396d9693e5c9f9d7233cfa93f395c093371017ff44aa9ae6564cdd' as HexString,
@@ -22,7 +20,7 @@ describe('y-fdp-storage', () => {
     }
     const wallet = makePrivateKeySigner(hexToBytes(testIdentity.privateKey) as Bytes<32>)
     const topic = '/crdt/document/test'
-    persistence = new FdpStoragePersistence(bee, seqFeed, wallet, topic, postageBatchId)
+    persistence = new FdpStoragePersistence(bee, wallet, topic, postageBatchId)
   })
 
   it('when created should be defined', async () => {

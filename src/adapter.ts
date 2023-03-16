@@ -14,20 +14,13 @@ export class FdpStoragePersistence {
 
   /**
    * @param bee Bee instance
-   * @param feed Swarm feed instance
    * @param signer Signer instance
    * @param topic Topic
    * @param postageBatchId Postage batch id
    */
-  constructor(
-    public bee: Bee,
-    public feed: SequentialFeed,
-    public signer: any,
-    public topic: string,
-    public postageBatchId: any,
-  ) {
+  constructor(public bee: Bee, public signer: any, public topic: string, public postageBatchId: any) {
     const hash = ethers.utils.id(topic).slice(2)
-    // const h = ethers.utils.arrayify(hash)
+    const feed = new SequentialFeed(bee)
     this.stateStorage = new FeedStorage(bee, feed, signer, hash, postageBatchId)
   }
 
