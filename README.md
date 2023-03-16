@@ -4,7 +4,7 @@ fdp-storage database provider for Yjs
 ## Table of Contents
 
 - [Install](#install)
-- [Usage]
+- [Usage](#usage with bee)
 - [API](#api)
 - [References](#references)
 - [License](#license)
