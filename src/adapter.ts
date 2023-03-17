@@ -60,10 +60,10 @@ export class FdpStoragePersistence {
    * @returns void
    * @emits {update: Uint8Array, timestamp: number, reference: string}
    **/
-  subscribe() {
+  subscribe(doc: Y.Doc) {
     const temp = setInterval(async () => {
       const updates = await this.stateStorage.storageRead()
-
+      Y.applyUpdate(doc, arrayify(updates.state))
       this.onUpdates.next({ update: arrayify(updates.state), ...updates })
     }, 1000)
 
