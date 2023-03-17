@@ -45,6 +45,13 @@ doc.getText('test').insert(0, 'Hello World')
 
 const mostRecentDoc = await persistence.getYDoc()
 // Hello World
+
+const close = persistence.subscribe(({
+  update
+}) => {
+  // get updates from feed
+  Y.applyUpdate(doc, update)
+});
 ```
 
 

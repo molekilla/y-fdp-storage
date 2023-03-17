@@ -32,6 +32,7 @@ export class FeedStorage {
 
     return {
       ...JSON.parse(state.text()),
+      ...last,
     }
   }
 

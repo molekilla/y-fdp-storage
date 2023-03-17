@@ -4,6 +4,7 @@ import { ethers } from 'ethers'
 import { Bee } from '@ethersphere/bee-js'
 import { SequentialFeed } from './feeds/sequential-feed'
 import { arrayify } from 'ethers/lib/utils'
+import { Subject } from 'rxjs'
 
 /**
  * Persistence layer for Yjs documents.
@@ -11,7 +12,7 @@ import { arrayify } from 'ethers/lib/utils'
  */
 export class FdpStoragePersistence {
   private stateStorage: FeedStorage
-
+  public onUpdates: Subject<any>
   /**
    * @param bee Bee instance
    * @param signer Signer instance
@@ -52,5 +53,20 @@ export class FdpStoragePersistence {
     Y.applyUpdate(doc, arrayify(updates.state))
 
     return doc
+  }
+
+  /**
+   *  Subscribes to the feed and emits updates.
+   * @returns void
+   * @emits {update: Uint8Array, timestamp: number, reference: string}
+   **/
+  async subscribe() {
+    const temp = setInterval(async () => {
+      const updates = await this.stateStorage.storageRead()
+
+      this.onUpdates.next({ update: arrayify(updates.state), ...updates })
+    }, 1000)
+
+    return () => clearInterval(temp)
   }
 }
