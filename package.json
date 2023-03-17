@@ -1,8 +1,8 @@
 {
   "name": "y-fdp-storage",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "fdp-storage database provider for Yjs",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "directories": {
     "doc": "docs",
     "test": "test"
