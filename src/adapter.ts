@@ -60,7 +60,7 @@ export class FdpStoragePersistence {
    * @returns void
    * @emits {update: Uint8Array, timestamp: number, reference: string}
    **/
-  async subscribe() {
+  subscribe() {
     const temp = setInterval(async () => {
       const updates = await this.stateStorage.storageRead()
 
