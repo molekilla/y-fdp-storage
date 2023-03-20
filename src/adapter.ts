@@ -12,7 +12,7 @@ import { Subject } from 'rxjs'
  */
 export class FdpStoragePersistence {
   private stateStorage: FeedStorage
-  public onUpdates: Subject<any>
+  public onUpdates: Subject<any> = new Subject()
   /**
    * @param bee Bee instance
    * @param signer Signer instance
@@ -60,12 +60,26 @@ export class FdpStoragePersistence {
    * @returns void
    * @emits {update: Uint8Array, timestamp: number, reference: string}
    **/
-  subscribe(doc: Y.Doc) {
+  subscribe(doc: Y.Doc, interval = 15000) {
     const temp = setInterval(async () => {
       const updates = await this.stateStorage.storageRead()
       Y.applyUpdate(doc, arrayify(updates.state))
       this.onUpdates.next({ update: arrayify(updates.state), ...updates })
-    }, 1000)
+    }, interval)
+
+    return () => clearInterval(temp)
+  }
+
+  /**
+   *  Auto updates the feed.
+   * @returns void
+   * @emits {update: Uint8Array, timestamp: number, reference: string}
+   **/
+  autoUpdate(doc: Y.Doc, interval = 5000) {
+    const temp = setInterval(async () => {
+      const update = Y.encodeStateAsUpdate(doc)
+      await this.stateStorage.storageWrite(update)
+    }, interval)
 
     return () => clearInterval(temp)
   }

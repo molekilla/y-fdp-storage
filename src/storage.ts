@@ -2,14 +2,12 @@ import * as Block from 'multiformats/block'
 import { hexlify } from 'ethers/lib/utils'
 import { SequentialFeed } from './feeds/sequential-feed'
 import { Bee } from '@ethersphere/bee-js'
-import bmt from '@fairdatasociety/bmt-js'
 
 /**
  * Defines a block (chunk) stored in the feed.
  */
 interface Block {
   state: Uint8Array | string
-  chunk: any
   timestamp: any
 }
 
@@ -43,11 +41,9 @@ export class FeedStorage {
    */
   async storageWrite(state: Uint8Array) {
     const feedRW = this.feed.makeFeedRW(this.topic, this.signer)
-    const chunk = bmt.makeChunk(state)
 
     const block: Block = {
       state: hexlify(state),
-      chunk: Buffer.from(chunk.address()).toString('hex'),
       timestamp: Date.now(),
     }
     const reference = await this.bee.uploadData(this.postageBatchId, JSON.stringify(block))
