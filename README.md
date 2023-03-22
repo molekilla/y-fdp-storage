@@ -41,6 +41,8 @@ doc.on('update', async update => {
     await persistence.storeUpdate(update)
 })
 
+// Or use persistence.autoUpdate(doc, interval_milliseconds)
+
 doc.getText('test').insert(0, 'Hello World')
 
 const mostRecentDoc = await persistence.getYDoc()
