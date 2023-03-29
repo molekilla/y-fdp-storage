@@ -1,6 +1,22 @@
 # y-fdp-storage
 fdp-storage database provider for Yjs
 
+## Abstract
+
+This Yjs provider uses Swarm Feeds Sequential mechanism, which is more effecient than Swarm Feeds Epoch. This library contains a complete Typescript implementation from scratch.
+
+We also added research technology from previous samples, in this case a simple wrapper which stores/read from a sequential feed. This can be extended to use Beeson, which in this Yjs provider we removed to avoid dependency complexity. Thus, the Yjs update data are stored as hex in the feed.
+
+Because a Swarm Feed requires a Topic and Address, we need to provider a signing  private key.
+
+## Further enhancements
+
+- Enable WebSockets for Feeds either in a standalone server or in Swarm, this to avoid doing long-polling.
+- Enable the provider to have a read (public key) and write (signing key) features.
+
+
+
+
 ## Table of Contents
 
 - [Install](#install)
