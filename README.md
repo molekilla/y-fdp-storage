@@ -3,7 +3,7 @@ fdp-storage database provider for Yjs
 
 ## Abstract
 
-This Yjs provider uses Swarm Feeds Sequential mechanism, which is more effecient than Swarm Feeds Epoch. This library contains a complete Typescript implementation from scratch.
+This Yjs provider uses Swarm Feeds Sequential mechanism, which is more efficient than Swarm Feeds Epoch. This library contains a complete Typescript implementation from scratch.
 
 We also added research technology from previous samples, in this case a simple wrapper which stores/read from a sequential feed. This can be extended to use Beeson, which in this Yjs provider we removed to avoid dependency complexity. Thus, the Yjs update data are stored as hex in the feed.
 
@@ -99,7 +99,47 @@ const mostRecentDoc = await persistence.getYDoc()
 
 ## API
 
-See `/docs` for generated TypeScript documentation.
+
+## FdpStoragePersistence
+
+Creates a FdpStoragePersistence instance.
+
+```typescript
+const persistence = new FdpStoragePersistence(fdp.connection.bee, fdp.account.wallet, topic, fdp.connection.postageBatchId)
+```
+
+### storeUpdate
+
+Writes the Yjs update to a feed.
+
+```typescript
+const update = Y.encodeStateAsUpdate(doc)
+await persistence.storeUpdate(update)
+```
+
+### getYDoc
+
+Reads the last state as a YDoc.
+
+```typescript
+const doc = await persistence.getYDoc()
+```
+### subscribe
+
+Subscribes to the feed and emits updates. Returns a function to cancel subscription interval.
+
+```typescript
+const close = persistence.subscribe(doc, 30_000)
+```
+
+### autoUpdate
+
+Pushes updates. Returns a function to cancel push interval.
+
+```typescript
+const close = persistence.autoUpdate(doc, 30_000)
+```
+
 
 ## Maintainers
 
