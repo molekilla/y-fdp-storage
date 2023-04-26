@@ -126,6 +126,15 @@ const update = Y.encodeStateAsUpdate(doc)
 await persistence.store(update)
 ```
 
+## read
+
+Reads the latest update from feed.
+
+```typescript
+const update = await persistence.read()
+```
+
+
 ### getYDoc
 
 Reads the last state as a YDoc.

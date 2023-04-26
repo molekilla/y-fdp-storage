@@ -54,6 +54,16 @@ export class FdpStoragePersistence {
 
   /**
    * Reads the last state from the feed.
+   * @returns Uint8Array
+   */
+  async read() {
+    const updates = await this.stateStorage.storageRead()
+
+    return updates.state
+  }
+
+  /**
+   * Reads the last state from the feed.
    * @returns contract state
    */
   async getYDoc() {
