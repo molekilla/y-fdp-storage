@@ -110,11 +110,20 @@ const persistence = new FdpStoragePersistence(fdp.connection.bee, fdp.account.wa
 
 ### storeUpdate
 
-Writes the Yjs update to a feed.
+Writes the Yjs update to a feed. Handles any throws internally.
 
 ```typescript
 const update = Y.encodeStateAsUpdate(doc)
 await persistence.storeUpdate(update)
+```
+
+### store
+
+Writes the Yjs update to a feed. Errors will be thrown if the update is not valid.
+
+```typescript
+const update = Y.encodeStateAsUpdate(doc)
+await persistence.store(update)
 ```
 
 ### getYDoc

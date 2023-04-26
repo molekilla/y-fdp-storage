@@ -27,7 +27,7 @@ export class FdpStoragePersistence {
 
   /**
    * Writes the update to the feed.
-   * @param update The update to be written.
+   * @param update The update to be written. Handles exceptions internally.
    * @returns void
    */
   async storeUpdate(update) {
@@ -42,6 +42,16 @@ export class FdpStoragePersistence {
       await this.stateStorage.storageWrite(update)
     }
   }
+
+  /**
+   * Writes the update to the feed.
+   * @param update The update to be written. Errors will be thrown if the update is not valid.
+   * @returns void
+   */
+  async store(update) {
+    await this.stateStorage.storageWrite(update)
+  }
+
   /**
    * Reads the last state from the feed.
    * @returns contract state
