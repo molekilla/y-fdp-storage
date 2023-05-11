@@ -1,6 +1,6 @@
 import * as Y from 'yjs'
 import { FdpStoragePersistence } from '../../src/adapter'
-import { Utils } from '@ethersphere/bee-js'
+import { Data, Utils } from '@ethersphere/bee-js'
 const { hexToBytes } = Utils
 import { Bee } from '@ethersphere/bee-js'
 import { Bytes, HexString, makePrivateKeySigner } from '../../src/feeds/utils'
@@ -19,8 +19,14 @@ describe('y-fdp-storage', () => {
       address: '8d3766440f0d7b949a5e32995d09619a7f86e632' as HexString,
     }
     const wallet = makePrivateKeySigner(hexToBytes(testIdentity.privateKey) as Bytes<32>)
+    const signer = {
+      address: Utils.makeEthAddress(testIdentity.address),
+      sign: async (digest: Data) => {
+        return wallet.sign(digest)
+      },
+    }
     const topic = '/crdt/document/testing_doc_5'
-    persistence = new FdpStoragePersistence(bee, wallet, topic, postageBatchId)
+    persistence = new FdpStoragePersistence(bee, signer, topic, postageBatchId)
   })
 
   it('when created should be defined', async () => {
