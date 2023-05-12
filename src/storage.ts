@@ -50,4 +50,24 @@ export class FeedStorage {
 
     return feedRW.setLastUpdate(this.postageBatchId, reference.reference)
   }
+
+  /**
+   * Writes the state to the feed.
+   * @param schemaFn  The schema function to be used to encode the state.
+   * @param state The state to be written.
+   * @returns void
+   */
+  async storageWriteWithSchema(schemaFn: (state: string) => string, state: Uint8Array) {
+    const feedRW = this.feed.makeFeedRW(this.topic, this.signer)
+
+    let block
+    if (state) {
+      block = schemaFn(hexlify(state))
+    } else {
+      block = schemaFn('')
+    }
+    const reference = await this.bee.uploadData(this.postageBatchId, JSON.stringify(block))
+
+    return feedRW.setLastUpdate(this.postageBatchId, reference.reference)
+  }
 }

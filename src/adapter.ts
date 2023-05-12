@@ -3,7 +3,7 @@ import { FeedStorage } from './storage'
 import { ethers } from 'ethers'
 import { Bee } from '@ethersphere/bee-js'
 import { SequentialFeed } from './feeds/sequential-feed'
-import { arrayify } from 'ethers/lib/utils'
+import { arrayify, hexlify } from 'ethers/lib/utils'
 import { Subject } from 'rxjs'
 
 /**
@@ -23,6 +23,33 @@ export class FdpStoragePersistence {
     const hash = ethers.utils.id(topic).slice(2)
     const feed = new SequentialFeed(bee)
     this.stateStorage = new FeedStorage(bee, feed, signer, hash, postageBatchId)
+  }
+
+  /**
+   * Writes the state to the feed.
+   * @param schemaFn  The schema function to be used to encode the state.
+   * @param state The state to be written.
+   * @returns void
+   */
+  async storeWithSchema(schemaFn: (state: string) => string, state: Uint8Array) {
+    return this.stateStorage.storageWriteWithSchema(schemaFn, state)
+  }
+  /**
+   * Converts a hex string to a Uint8Array.
+   * @param hexstring hex string
+   * @returns Uint8Array
+   * */
+  fromHexToUint8Array(hexstring: string): Uint8Array {
+    return arrayify(hexstring)
+  }
+
+  /**
+   * Converts a Uint8Array to a hex string.
+   * @param arr Uint8Array
+   * @returns hex string
+   * */
+  fromUint8ArrayToHex(arr: Uint8Array): string {
+    return hexlify(arr)
   }
 
   /**
